@@ -43,6 +43,9 @@
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1.0); }
         }
+        /* Hide scrollbar but allow scrolling */
+        #chat-window::-webkit-scrollbar { display: none; }
+        #chat-window { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -66,25 +69,38 @@
 
         <!-- Suggested Questions -->
         <div class="p-4 border-t border-gray-200">
-            <p class="text-sm text-gray-500 mb-3 text-center">Sugestões de perguntas:</p>
+            <p class="text-sm text-gray-500 mb-3 text-center">Ou clique numa das sugestões:</p>
             <div id="questions-container" class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <button onclick="askQuestion('resumo')" class="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg hover:bg-gray-200 transition-colors text-left">Poderia me dar um resumo da sua carreira?</button>
-                <button onclick="askQuestion('experiencia')" class="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg hover:bg-gray-200 transition-colors text-left">Fale sobre sua experiência com Startups.</button>
-                <button onclick="askQuestion('premios')" class="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg hover:bg-gray-200 transition-colors text-left">Quais são seus principais prêmios?</button>
-                <button onclick="askQuestion('contato')" class="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg hover:bg-gray-200 transition-colors text-left">Como posso entrar em contato?</button>
+                 <button onclick="handleQuestion('resumo', 'Poderia me dar um resumo da sua carreira?')" class="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg hover:bg-gray-200 transition-colors text-left">Poderia me dar um resumo da sua carreira?</button>
+                 <button onclick="handleQuestion('experiencia', 'Fale sobre sua experiência com Startups.')" class="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg hover:bg-gray-200 transition-colors text-left">Fale sobre sua experiência com Startups.</button>
+                 <button onclick="handleQuestion('premios', 'Quais são seus principais prêmios?')" class="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg hover:bg-gray-200 transition-colors text-left">Quais são seus principais prêmios?</button>
+                 <button onclick="handleQuestion('contato', 'Como posso entrar em contato?')" class="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg hover:bg-gray-200 transition-colors text-left">Como posso entrar em contato?</button>
             </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
+            <form id="chat-form" class="flex items-center space-x-2">
+                <input id="user-input" type="text" placeholder="Escreva a sua pergunta..." class="flex-1 p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                <button type="submit" class="bg-blue-500 text-white rounded-full p-3 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
         </div>
     </div>
 
     <script>
         const chatWindow = document.getElementById('chat-window');
         const questionsContainer = document.getElementById('questions-container');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
 
         const resumeData = {
             resumo: `Com certeza! Sou advogada, sócia do Guilherme de Oliveira e Associados, consultora, mentora e palestrante com mais de uma década de experiência na interseção entre Direito, Tecnologia e Inovação. Tenho um forte background acadêmico, incluindo mestrado em Negócios Digitais pelo IDP-DF e especialização em Plataformas Digitais pelo MIT. Fui reconhecida com prêmios como o "Top 100 Advogados do Brasil" em 2024.`,
             experiencia: `Minha experiência com startups é multifacetada. Atuo no núcleo Corporativo e de Startups, focando em governança, gestão de riscos e internacionalização de empresas de tecnologia. Fui Assessora de Inovação e Relacionamento com Startups no Banco do Brasil, sou fundadora da Go Digital Consultoria para transformação digital, professora do curso "Advocacia para Startups" na ESA-OAB/SP e mentora de startups na FGV.`,
             premios: `Claro! Meus reconhecimentos mais recentes incluem: <ul class='list-disc pl-5 mt-2 space-y-1'><li><strong>Prêmio Top 100 Advogados do Brasil</strong> pela AdvBox (2024).</li><li><strong>Top 2 Melhor Advogada Digital do Brasil</strong> pela Blacksisters in Law (2023).</li><li><strong>Melhor Dissertação de Mestrado</strong> pelo Instituto Brasileiro de Ensino, Desenvolvimento e Pesquisa (IDP) (2022).</li></ul>`,
-            contato: `Você pode me encontrar de várias formas: <ul class='list-disc pl-5 mt-2 space-y-1'><li><strong>LinkedIn:</strong> <a href='https://www.linkedin.com/in/isabelamfsantos' target='_blank' class='text-blue-600 hover:underline'>in/isabelamfsantos</a></li><li><strong>Instagram:</strong> <a href='https://www.instagram.com/isabelasantosadv_/' target='_blank' class='text-blue-600 hover:underline'>@isabelasantosadv_</a></li><li><strong>WhatsApp:</strong> <a href='https://wa.me/5521992000826' target='_blank' class='text-blue-600 hover:underline'>+55 21 99200-0826</a></li></ul>`
+            contato: `Você pode me encontrar de várias formas: <ul class='list-disc pl-5 mt-2 space-y-1'><li><strong>LinkedIn:</strong> <a href='https://www.linkedin.com/in/isabelamfsantos' target='_blank' class='text-blue-600 hover:underline'>in/isabelamfsantos</a></li><li><strong>Instagram:</strong> <a href='https://www.instagram.com/isabelasantosadv_/' target='_blank' class='text-blue-600 hover:underline'>@isabelasantosadv_</a></li><li><strong>WhatsApp:</strong> <a href='https://wa.me/5521992000826' target='_blank' class='text-blue-600 hover:underline'>+55 21 99200-0826</a></li></ul>`,
+            desconhecido: `Peço desculpa, não tenho a certeza de como responder a essa pergunta. Pode tentar reformular ou escolher um dos tópicos sugeridos? O meu conhecimento está focado no resumo profissional, experiência com startups, prémios e formas de contacto da Isabela.`
         };
 
         function addMessage(content, sender = 'assistant') {
@@ -104,29 +120,29 @@
             const typingBubble = document.createElement('div');
             typingBubble.id = 'typing-indicator';
             typingBubble.className = 'chat-bubble-assistant';
-            typingBubble.innerHTML = `
-                <div class="typing-indicator">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            `;
+            typingBubble.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
             chatWindow.appendChild(typingBubble);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
         function removeTypingIndicator() {
             const indicator = document.getElementById('typing-indicator');
-            if (indicator) {
-                indicator.remove();
-            }
+            if (indicator) indicator.remove();
+        }
+        
+        function getResponseKey(question) {
+            const q = question.toLowerCase();
+            if (q.includes('resumo') || q.includes('carreira') || q.includes('quem é você')) return 'resumo';
+            if (q.includes('experiência') || q.includes('startup')) return 'experiencia';
+            if (q.includes('prêmio') || q.includes('prêmios') || q.includes('reconhecimento')) return 'premios';
+            if (q.includes('contato') || q.includes('contactar') || q.includes('falar com')) return 'contato';
+            return 'desconhecido';
         }
 
-        function askQuestion(key) {
-            const questionText = Array.from(questionsContainer.children).find(btn => btn.getAttribute('onclick') === `askQuestion('${key}')`).textContent;
-            
+        function handleQuestion(key, questionText) {
             addMessage(questionText, 'user');
             questionsContainer.classList.add('pointer-events-none', 'opacity-50');
+            userInput.disabled = true;
 
             showTypingIndicator();
 
@@ -134,15 +150,28 @@
                 removeTypingIndicator();
                 addMessage(resumeData[key]);
                 questionsContainer.classList.remove('pointer-events-none', 'opacity-50');
-            }, 1500 + Math.random() * 500); // Simulate realistic delay
+                userInput.disabled = false;
+                userInput.focus();
+            }, 1500 + Math.random() * 500);
         }
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userText = userInput.value.trim();
+            if (userText) {
+                const responseKey = getResponseKey(userText);
+                handleQuestion(responseKey, userText);
+                userInput.value = '';
+            }
+        });
 
         // Initial greeting
         function startConversation() {
             showTypingIndicator();
             setTimeout(() => {
                 removeTypingIndicator();
-                addMessage("Olá! Sou a assistente virtual da Isabela. Estou aqui para ajudar a responder suas perguntas sobre o currículo dela. Como posso ajudar?");
+                addMessage("Olá! Sou a assistente virtual da Isabela. Pode perguntar-me sobre o currículo dela ou clicar numa das sugestões abaixo. Como posso ajudar?");
+                userInput.focus();
             }, 1000);
         }
 
